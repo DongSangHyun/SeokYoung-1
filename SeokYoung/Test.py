@@ -1,71 +1,69 @@
 from time import sleep
 from opcua import Client
+from opcua import ua
 from datetime import datetime
 import pytz
 import pymssql
+import math
+import re
+
 ######################################################################## Error Log
 import logging
 from logging.handlers import TimedRotatingFileHandler
-log_handler = TimedRotatingFileHandler(
-    filename="./log_files/errorLog",           # 확장자 없이!
-    when="midnight",                 # 자정마다 분리
-    interval=1,
-    backupCount=30,                  # 보관할 최대 일수 (30일치)
-    encoding="utf-8",
-    utc=False,                       # 한국 시간 기준이면 False
-    # atTime=datetime.time(16, 0)    # 자정이 아닌 다른 시간을 기준으로 롤오버(분리) 가능
-)
-log_handler.suffix = "%Y%m%d"        # 파일명 날짜 형식
 
-# 로거 설정
+log_handler = TimedRotatingFileHandler(
+    filename="./log_files/errorLog",
+    when="midnight",
+    interval=1,
+    backupCount=30,
+    encoding="utf-8",
+    utc=False,
+)
+log_handler.suffix = "%Y%m%d"
+
 logger = logging.getLogger("MyLogger")
 logger.setLevel(logging.ERROR)
 logger.addHandler(log_handler)
 
-# 포맷터 설정 (옵션)
 formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
 log_handler.setFormatter(formatter)
 
 # 서울 타임존
 seoul_tz = pytz.timezone('Asia/Seoul')
 
-import re
 
 class SubHandler:
-    def __init__(self, cursor):
+    def __init__(self, cursor, shared_state: dict, node_mc31):
         self.cursor = cursor
         self._seen = set()
+        self.state = shared_state
+        self.node_mc31 = node_mc31
 
+    # "ns=2;s=" 또는 "2;s=" 같은 프리픽스 제거
     def _sanitize_device(self, device: str) -> str:
-        """
-        'ns=2;s=Device1' 또는 '2;s=Device1' 같은 프리픽스를 제거.
-        """
         if not device:
             return device
-        # 공백 제거
         device = device.strip()
-        # 'ns=2;s=' 또는 '2;s=' 같은 형태 지우기
         device = re.sub(r"^(?:ns=\d+;)?s=", "", device)
         device = re.sub(r"^\d+;s=", "", device)
         return device
 
     def _unwrap_stringnode(self, s: str) -> str:
-        # "StringNodeId(ns=2;s=Device1.MC3-2)" -> "ns=2;s=Device1.MC3-2"
         if s.startswith("StringNodeId(") and s.endswith(")"):
             return s[len("StringNodeId("):-1]
         return s
 
-    def _parse_device_tag(self, node) -> tuple[str, str]:
+    # node에서 device와 tag 분리
+    def _parse_device_tag(self, node):
         nid_obj = getattr(node, "nodeid", node)
 
         ident = getattr(nid_obj, "Identifier", None)
         if ident:
-            core = str(ident)  # 보통 'Device1.MC3-2'
+            core = str(ident)  # e.g., 'Device1.MC3-2'
             if "." in core:
                 device, tag = core.split(".", 1)
                 return self._sanitize_device(device), tag
 
-        #문자열 파싱
         s = nid_obj.to_string() if hasattr(nid_obj, "to_string") else str(nid_obj)
         s = self._unwrap_stringnode(s)
 
@@ -85,8 +83,47 @@ class SubHandler:
 
         return "", s
 
+    def _is_nullish(self, v) -> bool:
+        if v is None:
+            return True
+        if isinstance(v, float) and math.isnan(v):
+            return True
+        if isinstance(v, str) and v.strip() == "":
+            return True
+        return False
+
+    def _to_float(self, v):
+        try:
+            if v is None:
+                return None
+            if isinstance(v, (int, float)):
+                return float(v)
+            if isinstance(v, str):
+                vs = v.strip()
+                if vs == "":
+                    return None
+                return float(vs)
+            return float(v)
+        except Exception:
+            return None
+
+    def _read_float_from_node(self, node_obj):
+        try:
+            dv: ua.DataValue = node_obj.get_data_value()
+            sc = getattr(dv, "StatusCode", None)
+            if isinstance(sc, ua.StatusCode) and not sc.is_good():
+                return None
+            # dv.Value는 Variant. 실제 값은 dv.Value.Value 에 들어있을 수 있음
+            raw = None
+            if hasattr(dv, "Value"):
+                raw = getattr(dv.Value, "Value", None)
+            raw = raw if raw is not None else dv  # fallback 방지
+            return self._to_float(raw)
+        except Exception:
+            return None
+
     def datachange_notification(self, node, val, data):
-        # 첫 통지(현재값) 1회는 스킵
+        # 첫 통지(현재값) 1회 스킵
         try:
             handle = getattr(data.monitored_item, "ClientHandle", None)
         except Exception:
@@ -95,6 +132,39 @@ class SubHandler:
         if key not in self._seen:
             self._seen.add(key)
             return
+
+        # Good 이외(Status Bad/Uncertain)는 무시
+        try:
+            dv = data.monitored_item.Value
+            sc = getattr(dv, "StatusCode", None)
+            if isinstance(sc, ua.StatusCode) and not sc.is_good():
+                return
+        except Exception:
+            pass
+
+        # 값이 NULL/NaN/빈문자열이면 무시
+        if self._is_nullish(val):
+            return
+
+        # device/tag 파싱
+        device, tag = self._parse_device_tag(node)
+
+        # 최신값 캐시(모든 태그에 대해 저장) — 다른 조건식에서 활용할 수도 있어 유지
+        num_val = self._to_float(val)
+        last_num = self.state.setdefault("last_num", {})
+        last_num[(device, tag)] = num_val
+
+        # --- 조건: MC3-2는 '실시간 Read'로 MC3-1 값을 읽어 0 초과일 때만 처리 ---
+        if device == "Device1" and tag == "MC3-2":
+            mc31_now = self._read_float_from_node(self.node_mc31)
+            if mc31_now is None or mc31_now <= 0:
+                return
+
+        # --- 조건: MC4-2, MC4-3은 값이 0 초과일 때만 처리 ---
+        if device == "Device2" and tag in ("MC4-2", "MC4-3"):
+            v = self._to_float(val)
+            if v is None or v <= 0:
+                return
 
         # 서버 타임스탬프 -> 서울시간
         try:
@@ -108,9 +178,6 @@ class SubHandler:
         except Exception:
             server_ts_seoul = None
 
-        # device/tag 파싱
-        device, tag = self._parse_device_tag(node)
-
         # 디버그 출력
         try:
             nid_obj = getattr(node, "nodeid", node)
@@ -120,14 +187,38 @@ class SubHandler:
 
         print(f"[DATA] node={nodeid_str}, device={device}, tag={tag}, value={val}, server_ts={server_ts_seoul}")
 
-        # DB INSERT (오토커밋)
+        # DB INSERT (특정 태그는 Value + RawValue 따로 저장)
         try:
-            sql = """
-                INSERT INTO dbo.TA_EquipDataAcquisition (Device, Tag, Value, InsertDate)
-                VALUES (%s, %s, %s, GETDATE())
-            """
-            self.cursor.execute(sql, (device, tag, val))
-            # autocommit=True 이므로 commit() 불필요
+            if tag in ("MC1-2", "MC2-2", "MC4-1", "MC5-2", "MC6-2"):
+                sql = """
+                    SELECT TOP(1)
+                        RawValue
+                    FROM dbo.TA_EquipDataAcquisition
+                    WHERE Tag = %s
+                    ORDER BY InsertDate DESC
+                """
+                self.cursor.execute(sql, tag)
+                row = self.cursor.fetchone()
+                pre_rawvalue = 0
+                if row :
+                    pre_rawvalue = row[0]
+                    sql = """
+                        INSERT INTO dbo.TA_EquipDataAcquisition (Device, Tag, Value, InsertDate, RawValue)
+                        VALUES (%s, %s, %s, GETDATE(), %s)
+                    """
+                    self.cursor.execute(sql, (device, tag, (val - pre_rawvalue), val))
+                else :
+                    sql = """
+                        INSERT INTO dbo.TA_EquipDataAcquisition (Device, Tag, Value, InsertDate, RawValue)
+                        VALUES (%s, %s, %s, GETDATE(), %s)
+                    """
+                    self.cursor.execute(sql, (device, tag, val, val))
+            else:
+                sql = """
+                    INSERT INTO dbo.TA_EquipDataAcquisition (Device, Tag, Value, InsertDate)
+                    VALUES (%s, %s, %s, GETDATE())
+                """
+                self.cursor.execute(sql, (device, tag, val))
         except Exception as ex:
             logger.error("DB INSERT 실패 : " + str(ex))
 
@@ -151,45 +242,65 @@ def do_con():
         sleep(10)
         return do_con()
 
+
 def main(db_cursor):
     url = "opc.tcp://192.168.10.103:52250"
     client = None
+    subscription_fast = None   # 2초 퍼블리싱(기본)
+    subscription_slow = None   # 10초 퍼블리싱(MC3-2 전용)
+    shared_state = {"last_num": {}}
+
     try:
         client = Client(url)
-        # 필요 시 서버가 None 보안 허용이면 아래 주석 해제
         # client.set_security_string("None")
         client.connect()
         print("Connected.")
 
-        # 구독 생성 (퍼블리싱 주기 2000ms = 2초)
-        subscription = client.create_subscription(2000, SubHandler(db_cursor))
+        # MC3-1 Node 객체를 먼저 확보해 핸들러에 전달
+        node_mc31 = client.get_node("ns=2;s=Device1.MC3-1")
 
-        # 모니터링할 노드들
-        nodeids = [
+        # 구독 생성 (핸들러에 node_mc31 전달)
+        handler_fast = SubHandler(db_cursor, shared_state, node_mc31)
+        handler_slow = SubHandler(db_cursor, shared_state, node_mc31)
+
+        subscription_fast = client.create_subscription(2000, handler_fast)
+        subscription_slow = client.create_subscription(10000, handler_slow)
+
+        slow_nodeid = "ns=2;s=Device1.MC3-2"
+        fast_nodeids = [
             "ns=2;s=Device1.MC1-1", "ns=2;s=Device1.MC1-2", "ns=2;s=Device1.MC1-3",
             "ns=2;s=Device1.MC2-1", "ns=2;s=Device1.MC2-2",
-            "ns=2;s=Device1.MC3-1", "ns=2;s=Device1.MC3-2",
+            "ns=2;s=Device1.MC3-1",   # <- fast 구독에도 MC3-1은 등록 (값 캐시/모니터링)
             "ns=2;s=Device2.MC4-1", "ns=2;s=Device2.MC4-2", "ns=2;s=Device2.MC4-3", "ns=2;s=Device2.MC4-4",
             "ns=2;s=Device2.MC5-1", "ns=2;s=Device2.MC5-2",
             "ns=2;s=Device2.MC6-1", "ns=2;s=Device2.MC6-2",
         ]
-        nodes = [client.get_node(nid) for nid in nodeids]
 
-        # 각 노드를 개별적으로 구독하면서 샘플링 주기 0.5초 설정
-        from opcua import ua
-        for idx, node in enumerate(nodes):
+        # 빠른 구독: 샘플링 0.5초
+        for idx, nid in enumerate(fast_nodeids, start=1):
+            node = client.get_node(nid)
             params = ua.MonitoredItemCreateRequest()
             params.ItemToMonitor.NodeId = node.nodeid
             params.ItemToMonitor.AttributeId = ua.AttributeIds.Value
             params.MonitoringMode = ua.MonitoringMode.Reporting
-            params.RequestedParameters.ClientHandle = idx + 1
+            params.RequestedParameters.ClientHandle = idx
             params.RequestedParameters.SamplingInterval = 500  # 0.5초
             params.RequestedParameters.QueueSize = 1
             params.RequestedParameters.DiscardOldest = True
+            subscription_fast.create_monitored_items([params])
 
-            subscription.create_monitored_items([params])
+        # 느린 구독(10초): MC3-2만
+        node_mc32 = client.get_node(slow_nodeid)
+        params = ua.MonitoredItemCreateRequest()
+        params.ItemToMonitor.NodeId = node_mc32.nodeid
+        params.ItemToMonitor.AttributeId = ua.AttributeIds.Value
+        params.MonitoringMode = ua.MonitoringMode.Reporting
+        params.RequestedParameters.ClientHandle = 1
+        params.RequestedParameters.SamplingInterval = 500  # 0.5초
+        params.RequestedParameters.QueueSize = 1
+        params.RequestedParameters.DiscardOldest = True
+        subscription_slow.create_monitored_items([params])
 
-        # 무한 루프로 계속 수신 대기 (Ctrl+C로 종료)
         print("Monitoring started. Press Ctrl+C to stop...")
         while True:
             sleep(1)
@@ -202,15 +313,17 @@ def main(db_cursor):
     finally:
         if client is not None:
             try:
-                if 'subscription' in locals():
-                    subscription.delete()
+                if subscription_fast is not None:
+                    subscription_fast.delete()
+                if subscription_slow is not None:
+                    subscription_slow.delete()
                 client.disconnect()
             except Exception:
                 pass
         print("Disconnected.")
 
+
 if __name__ == "__main__":
     conn = do_con()
     cursor = conn.cursor()
-    # 필요 시: conn.autocommit(True) 도 가능
     main(cursor)
