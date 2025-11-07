@@ -33,11 +33,9 @@ seoul_tz = pytz.timezone('Asia/Seoul')
 
 
 class SubHandler:
-    def __init__(self, cursor, shared_state: dict, node_mc31):
+    def __init__(self, cursor):
         self.cursor = cursor
         self._seen = set()
-        self.state = shared_state
-        self.node_mc31 = node_mc31
 
     # "ns=2;s=" 또는 "2;s=" 같은 프리픽스 제거
     def _sanitize_device(self, device: str) -> str:
@@ -149,23 +147,6 @@ class SubHandler:
         # device/tag 파싱
         device, tag = self._parse_device_tag(node)
 
-        # 최신값 캐시(모든 태그에 대해 저장) — 다른 조건식에서 활용할 수도 있어 유지
-        num_val = self._to_float(val)
-        last_num = self.state.setdefault("last_num", {})
-        last_num[(device, tag)] = num_val
-
-        # --- 조건: MC3-2는 '실시간 Read'로 MC3-1 값을 읽어 0 초과일 때만 처리 ---
-        if device == "Device1" and tag == "MC3-2":
-            mc31_now = self._read_float_from_node(self.node_mc31)
-            if mc31_now is None or mc31_now <= 0:
-                return
-
-        # --- 조건: MC4-2, MC4-3은 값이 0 초과일 때만 처리 ---
-        if device == "Device2" and tag in ("MC4-2", "MC4-3"):
-            v = self._to_float(val)
-            if v is None or v <= 0:
-                return
-
         # 서버 타임스탬프 -> 서울시간
         try:
             server_ts = data.monitored_item.Value.ServerTimestamp
@@ -178,6 +159,222 @@ class SubHandler:
         except Exception:
             server_ts_seoul = None
 
+        # --- 조건: MC4-2, MC4-3은 값이 0 초과일 때만 처리 ---
+        if device == "Device2" and tag in ("MC4-2", "MC4-3"):
+            v = self._to_float(val)
+            if v is None or v <= 0:
+                return
+        
+        # --- 조건: MC1-1 DB 이전 값과 비교 후 같지않을 때만 처리 ---
+        if tag == "MC1-1" :
+            sql = """
+                SELECT TOP(1)
+                    Value
+                FROM [dbo].[TA_EquipDataAcquisition]
+                WHERE Tag = 'MC1-1'
+                ORDER BY InsertDate DESC
+            """
+            self.cursor.execute(sql, tag)
+            row = self.cursor.fetchone()
+            if val == row[0] : return
+        
+        # --- 조건: MC1-2 DB 이전 RawValue와 현재 VAL이 같지않을 때만 처리 ---
+        if tag == "MC1-2" :
+            sql = """
+                SELECT TOP(1)
+                    RawValue
+                FROM [dbo].[TA_EquipDataAcquisition]
+                WHERE Tag = 'MC1-2'
+                ORDER BY InsertDate DESC
+            """
+            self.cursor.execute(sql, tag)
+            row = self.cursor.fetchone()
+            if val == row[0] : return
+
+        # --- 조건: MC1-3 DB 이전 Value와 현재 VAL이 같지않고 1-1이 0이 아니거나 현재 시간과 이전 데이터 시간의 차가 적을 경우만 처리  ---
+        # --- + 이전 데이터가 없으면 처리
+        if tag == "MC1-3" :
+            sql = """
+                SELECT TOP(1)
+                    Value, InsertDate
+                FROM [dbo].[TA_EquipDataAcquisition]
+                WHERE Tag = 'MC1-3'
+                ORDER BY InsertDate DESC
+            """
+            self.cursor.execute(sql, tag)
+            row = self.cursor.fetchone()
+            
+            if not row:
+                pass
+            else:
+                db_time = row[1]
+                if db_time.tzinfo is None:
+                    db_time = seoul_tz.localize(db_time)
+                
+                time_diff_sec = (server_ts_seoul - db_time).total_seconds()
+                condition_1 = (val == row[0])
+                condition_2 = (val == 0)
+                condition_3 = (val > time_diff_sec)
+                if (condition_1 and (condition_2 or condition_3)):
+                    return
+
+        # --- 조건: MC2-1 DB 이전 값과 비교 후 같지않을 때만 처리 ---
+        if tag == "MC2-1" :
+            sql = """
+                SELECT TOP(1)
+                    Value
+                FROM [dbo].[TA_EquipDataAcquisition]
+                WHERE Tag = 'MC2-1'
+                ORDER BY InsertDate DESC
+            """
+            self.cursor.execute(sql, tag)
+            row = self.cursor.fetchone()
+            if val == row[0] : return
+
+        # --- 조건: MC2-2 DB 이전 RawValue와 현재 VAL이 같지않을 때만 처리 ---
+        if tag == "MC2-2" :
+            sql = """
+                SELECT TOP(1)
+                    RawValue
+                FROM [dbo].[TA_EquipDataAcquisition]
+                WHERE Tag = 'MC2-2'
+                ORDER BY InsertDate DESC
+            """
+            self.cursor.execute(sql, tag)
+            row = self.cursor.fetchone()
+            if val == row[0] : return
+
+        # --- 조건: MC3-1 DB 이전 Value와 현재 VAL이 같지않을 때만 처리,  ---
+        if tag == "MC3-1" :
+            sql = """
+                SELECT TOP(1)
+                    Value, InsertDate
+                FROM [dbo].[TA_EquipDataAcquisition]
+                WHERE Tag = 'MC3-1'
+                ORDER BY InsertDate DESC
+            """
+            self.cursor.execute(sql, tag)
+            row = self.cursor.fetchone()
+            
+            if not row:
+                pass
+            else:
+                db_time = row[1]
+                if db_time.tzinfo is None:
+                    db_time = seoul_tz.localize(db_time)
+                
+                time_diff_sec = (server_ts_seoul - db_time).total_seconds()
+                condition_1 = (val == row[0])
+                condition_2 = (val == 0)
+                condition_3 = (val > time_diff_sec)
+                if (condition_1 and (condition_2 or condition_3)):
+                    return
+                
+        # --- 조건: MC4-1 DB 이전 RawValue와 현재 VAL이 같지않을 때만 처리 ---
+        if tag == "MC4-1" :
+            sql = """
+                SELECT TOP(1)
+                    RawValue
+                FROM [dbo].[TA_EquipDataAcquisition]
+                WHERE Tag = 'MC4-1'
+                ORDER BY InsertDate DESC
+            """
+            self.cursor.execute(sql, tag)
+            row = self.cursor.fetchone()
+            if val == row[0] : return
+
+        # --- 조건: MC4-4 DB 이전 Value와 현재 VAL이 같지않을 때만 처리,  ---
+        if tag == "MC4-4" :
+            sql = """
+                SELECT TOP(1)
+                    Value, InsertDate
+                FROM [dbo].[TA_EquipDataAcquisition]
+                WHERE Tag = 'MC4-4'
+                ORDER BY InsertDate DESC
+            """
+            self.cursor.execute(sql, tag)
+            row = self.cursor.fetchone()
+            
+            if not row:
+                pass
+            else:
+                db_time = row[1]
+                if db_time.tzinfo is None:
+                    db_time = seoul_tz.localize(db_time)
+                
+                time_diff_sec = (server_ts_seoul - db_time).total_seconds()
+                condition_1 = (val == row[0])
+                condition_2 = (val == 0)
+                condition_3 = (val > time_diff_sec)
+                if (condition_1 and (condition_2 or condition_3)):
+                    return
+                
+        # --- 조건: MC5-1 DB 이전 Value와 현재 VAL이 같지않을 때만 처리,  ---
+        if tag == "MC5-1" :
+            sql = """
+                SELECT TOP(1)
+                    Value, InsertDate
+                FROM [dbo].[TA_EquipDataAcquisition]
+                WHERE Tag = 'MC5-1'
+                ORDER BY InsertDate DESC
+            """
+            self.cursor.execute(sql, tag)
+            row = self.cursor.fetchone()
+            
+            if not row:
+                pass
+            else:
+                db_time = row[1]
+                if db_time.tzinfo is None:
+                    db_time = seoul_tz.localize(db_time)
+                
+                time_diff_sec = (server_ts_seoul - db_time).total_seconds()
+                condition_1 = (val == row[0])
+                condition_2 = (val == 0)
+                condition_3 = (val > time_diff_sec)
+                if (condition_1 and (condition_2 or condition_3)):
+                    return
+                
+        # --- 조건: MC5-2 DB 이전 RawValue와 현재 VAL이 같지않을 때만 처리 ---
+        if tag == "MC5-2" :
+            sql = """
+                SELECT TOP(1)
+                    RawValue
+                FROM [dbo].[TA_EquipDataAcquisition]
+                WHERE Tag = 'MC5-2'
+                ORDER BY InsertDate DESC
+            """
+            self.cursor.execute(sql, tag)
+            row = self.cursor.fetchone()
+            if val == row[0] : return
+
+        # --- 조건: MC6-1 DB 이전 값과 비교 후 같지않을 때만 처리 ---
+        if tag == "MC6-1" :
+            sql = """
+                SELECT TOP(1)
+                    Value
+                FROM [dbo].[TA_EquipDataAcquisition]
+                WHERE Tag = 'MC6-1'
+                ORDER BY InsertDate DESC
+            """
+            self.cursor.execute(sql, tag)
+            row = self.cursor.fetchone()
+            if val == row[0] : return
+        
+        # --- 조건: MC6-2 DB 이전 RawValue와 현재 VAL이 같지않을 때만 처리 ---
+        if tag == "MC6-2" :
+            sql = """
+                SELECT TOP(1)
+                    RawValue
+                FROM [dbo].[TA_EquipDataAcquisition]
+                WHERE Tag = 'MC6-2'
+                ORDER BY InsertDate DESC
+            """
+            self.cursor.execute(sql, tag)
+            row = self.cursor.fetchone()
+            if val == row[0] : return
+        
+
         # 디버그 출력
         try:
             nid_obj = getattr(node, "nodeid", node)
@@ -185,7 +382,6 @@ class SubHandler:
         except Exception:
             nodeid_str = str(getattr(node, "nodeid", node))
 
-        print(f"[DATA] node={nodeid_str}, device={device}, tag={tag}, value={val}, server_ts={server_ts_seoul}")
 
         # DB INSERT (특정 태그는 Value + RawValue 따로 저장)
         try:
@@ -200,7 +396,7 @@ class SubHandler:
                 self.cursor.execute(sql, tag)
                 row = self.cursor.fetchone()
                 pre_rawvalue = 0
-                if row :
+                if row and row[0] is not None:
                     pre_rawvalue = row[0]
                     sql = """
                         INSERT INTO dbo.TA_EquipDataAcquisition (Device, Tag, Value, InsertDate, RawValue)
@@ -213,6 +409,8 @@ class SubHandler:
                         VALUES (%s, %s, %s, GETDATE(), %s)
                     """
                     self.cursor.execute(sql, (device, tag, val, val))
+                
+                    print(f"[DATA] node={nodeid_str}, device={device}, tag={tag}, value={val}, server_ts={server_ts_seoul}")
             else:
                 sql = """
                     INSERT INTO dbo.TA_EquipDataAcquisition (Device, Tag, Value, InsertDate)
@@ -220,7 +418,7 @@ class SubHandler:
                 """
                 self.cursor.execute(sql, (device, tag, val))
         except Exception as ex:
-            logger.error("DB INSERT 실패 : " + str(ex))
+            logger.error("DB INSERT 실패 : " + str(ex) + "/" + str(device) + "." + str(tag) + " : "+ str(val))
 
 
 def do_con():
@@ -248,7 +446,6 @@ def main(db_cursor):
     client = None
     subscription_fast = None   # 2초 퍼블리싱(기본)
     subscription_slow = None   # 10초 퍼블리싱(MC3-2 전용)
-    shared_state = {"last_num": {}}
 
     try:
         client = Client(url)
@@ -256,24 +453,25 @@ def main(db_cursor):
         client.connect()
         print("Connected.")
 
-        # MC3-1 Node 객체를 먼저 확보해 핸들러에 전달
-        node_mc31 = client.get_node("ns=2;s=Device1.MC3-1")
-
         # 구독 생성 (핸들러에 node_mc31 전달)
-        handler_fast = SubHandler(db_cursor, shared_state, node_mc31)
-        handler_slow = SubHandler(db_cursor, shared_state, node_mc31)
+        handler_fast = SubHandler(db_cursor)
+        handler_slow = SubHandler(db_cursor)
 
         subscription_fast = client.create_subscription(2000, handler_fast)
         subscription_slow = client.create_subscription(10000, handler_slow)
 
-        slow_nodeid = "ns=2;s=Device1.MC3-2"
+        slow_nodeid = [
+            "ns=2;s=Device1.MC3-2", 
+            "ns=2;s=Device2.MC4-2", "ns=2;s=Device2.MC4-3",
+            "ns=2;s=Device2.MC6-1",
+        ]
         fast_nodeids = [
             "ns=2;s=Device1.MC1-1", "ns=2;s=Device1.MC1-2", "ns=2;s=Device1.MC1-3",
             "ns=2;s=Device1.MC2-1", "ns=2;s=Device1.MC2-2",
-            "ns=2;s=Device1.MC3-1",   # <- fast 구독에도 MC3-1은 등록 (값 캐시/모니터링)
-            "ns=2;s=Device2.MC4-1", "ns=2;s=Device2.MC4-2", "ns=2;s=Device2.MC4-3", "ns=2;s=Device2.MC4-4",
+            "ns=2;s=Device1.MC3-1",
+            "ns=2;s=Device2.MC4-1", "ns=2;s=Device2.MC4-4",
             "ns=2;s=Device2.MC5-1", "ns=2;s=Device2.MC5-2",
-            "ns=2;s=Device2.MC6-1", "ns=2;s=Device2.MC6-2",
+            "ns=2;s=Device2.MC6-2",
         ]
 
         # 빠른 구독: 샘플링 0.5초
@@ -290,16 +488,17 @@ def main(db_cursor):
             subscription_fast.create_monitored_items([params])
 
         # 느린 구독(10초): MC3-2만
-        node_mc32 = client.get_node(slow_nodeid)
-        params = ua.MonitoredItemCreateRequest()
-        params.ItemToMonitor.NodeId = node_mc32.nodeid
-        params.ItemToMonitor.AttributeId = ua.AttributeIds.Value
-        params.MonitoringMode = ua.MonitoringMode.Reporting
-        params.RequestedParameters.ClientHandle = 1
-        params.RequestedParameters.SamplingInterval = 500  # 0.5초
-        params.RequestedParameters.QueueSize = 1
-        params.RequestedParameters.DiscardOldest = True
-        subscription_slow.create_monitored_items([params])
+        for idx, nid in enumerate(slow_nodeid, start=1):
+            node = client.get_node(nid)
+            params = ua.MonitoredItemCreateRequest()
+            params.ItemToMonitor.NodeId = node.nodeid
+            params.ItemToMonitor.AttributeId = ua.AttributeIds.Value
+            params.MonitoringMode = ua.MonitoringMode.Reporting
+            params.RequestedParameters.ClientHandle = idx
+            params.RequestedParameters.SamplingInterval = 500  # 0.5초
+            params.RequestedParameters.QueueSize = 1
+            params.RequestedParameters.DiscardOldest = True
+            subscription_slow.create_monitored_items([params])
 
         print("Monitoring started. Press Ctrl+C to stop...")
         while True:
