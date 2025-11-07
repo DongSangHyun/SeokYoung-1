@@ -410,13 +410,14 @@ class SubHandler:
                     """
                     self.cursor.execute(sql, (device, tag, val, val))
                 
-                    print(f"[DATA] node={nodeid_str}, device={device}, tag={tag}, value={val}, server_ts={server_ts_seoul}")
             else:
                 sql = """
                     INSERT INTO dbo.TA_EquipDataAcquisition (Device, Tag, Value, InsertDate)
                     VALUES (%s, %s, %s, GETDATE())
                 """
                 self.cursor.execute(sql, (device, tag, val))
+            
+            print(f"[DATA] node={nodeid_str}, device={device}, tag={tag}, value={val}, server_ts={server_ts_seoul}")
         except Exception as ex:
             logger.error("DB INSERT 실패 : " + str(ex) + "/" + str(device) + "." + str(tag) + " : "+ str(val))
 
