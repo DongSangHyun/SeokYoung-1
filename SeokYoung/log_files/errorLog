@@ -1,2 +1,0 @@
-2025-11-04 16:04:40,995 - ERROR - cannot connect OPC UA! Subscription.subscribe_data_change() got an unexpected keyword argument 'sampling_interval'
-2025-11-04 16:04:44,742 - ERROR - cannot connect OPC UA! Subscription.subscribe_data_change() got an unexpected keyword argument 'sampling_interval'

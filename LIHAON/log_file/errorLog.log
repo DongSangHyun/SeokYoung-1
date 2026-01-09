@@ -1,0 +1,247 @@
+2025-11-12 13:42:18,491 [INFO] 로그 파일 초기화 완료
+2025-11-12 13:42:18,530 [INFO] opening connection
+2025-11-12 13:42:18,545 [INFO] Thread started
+2025-11-12 13:42:18,545 [INFO] received header: Header(type:b'ACK', chunk_type:b'F', body_size:20, channel:0)
+2025-11-12 13:42:18,545 [INFO] open_secure_channel
+2025-11-12 13:42:18,546 [INFO] received header: Header(type:b'OPN', chunk_type:b'F', body_size:124, channel:1288445967)
+2025-11-12 13:42:18,546 [INFO] create_session
+2025-11-12 13:42:18,546 [INFO] received header: Header(type:b'MSG', chunk_type:b'F', body_size:3210, channel:1288445967)
+2025-11-12 13:42:18,547 [INFO] activate_session
+2025-11-12 13:42:18,548 [INFO] received header: Header(type:b'MSG', chunk_type:b'F', body_size:84, channel:1288445967)
+2025-11-12 13:42:18,548 [INFO] OPC UA Connected
+2025-11-12 13:42:18,548 [INFO] create_subscription
+2025-11-12 13:42:18,549 [INFO] received header: Header(type:b'MSG', chunk_type:b'F', body_size:60, channel:1288445967)
+2025-11-12 13:42:18,549 [INFO] _create_subscription_callback
+2025-11-12 13:42:18,549 [INFO] publish
+2025-11-12 13:42:18,549 [INFO] publish
+2025-11-12 13:42:18,549 [INFO] create_subscription
+2025-11-12 13:42:18,550 [INFO] received header: Header(type:b'MSG', chunk_type:b'F', body_size:60, channel:1288445967)
+2025-11-12 13:42:18,550 [INFO] _create_subscription_callback
+2025-11-12 13:42:18,550 [INFO] publish
+2025-11-12 13:42:18,550 [INFO] publish
+2025-11-12 13:42:18,550 [INFO] create_monitored_items
+2025-11-12 13:42:18,550 [INFO] received header: Header(type:b'MSG', chunk_type:b'F', body_size:71, channel:1288445967)
+2025-11-12 13:42:18,551 [INFO] create_monitored_items
+2025-11-12 13:42:18,551 [INFO] received header: Header(type:b'MSG', chunk_type:b'F', body_size:71, channel:1288445967)
+2025-11-12 13:42:18,551 [INFO] create_monitored_items
+2025-11-12 13:42:18,551 [INFO] received header: Header(type:b'MSG', chunk_type:b'F', body_size:71, channel:1288445967)
+2025-11-12 13:42:18,551 [INFO] create_monitored_items
+2025-11-12 13:42:18,552 [INFO] received header: Header(type:b'MSG', chunk_type:b'F', body_size:71, channel:1288445967)
+2025-11-12 13:42:18,552 [INFO] create_monitored_items
+2025-11-12 13:42:18,552 [INFO] received header: Header(type:b'MSG', chunk_type:b'F', body_size:71, channel:1288445967)
+2025-11-12 13:42:18,552 [INFO] create_monitored_items
+2025-11-12 13:42:18,553 [INFO] received header: Header(type:b'MSG', chunk_type:b'F', body_size:71, channel:1288445967)
+2025-11-12 13:42:18,553 [INFO] create_monitored_items
+2025-11-12 13:42:18,553 [INFO] received header: Header(type:b'MSG', chunk_type:b'F', body_size:71, channel:1288445967)
+2025-11-12 13:42:18,553 [INFO] create_monitored_items
+2025-11-12 13:42:18,553 [INFO] received header: Header(type:b'MSG', chunk_type:b'F', body_size:71, channel:1288445967)
+2025-11-12 13:42:18,554 [INFO] create_monitored_items
+2025-11-12 13:42:18,554 [INFO] received header: Header(type:b'MSG', chunk_type:b'F', body_size:71, channel:1288445967)
+2025-11-12 13:42:18,554 [INFO] create_monitored_items
+2025-11-12 13:42:18,554 [INFO] received header: Header(type:b'MSG', chunk_type:b'F', body_size:71, channel:1288445967)
+2025-11-12 13:42:18,554 [INFO] create_monitored_items
+2025-11-12 13:42:18,555 [INFO] received header: Header(type:b'MSG', chunk_type:b'F', body_size:71, channel:1288445967)
+2025-11-12 13:42:18,555 [INFO] create_monitored_items
+2025-11-12 13:42:18,555 [INFO] received header: Header(type:b'MSG', chunk_type:b'F', body_size:71, channel:1288445967)
+2025-11-12 13:42:18,555 [INFO] create_monitored_items
+2025-11-12 13:42:18,555 [INFO] received header: Header(type:b'MSG', chunk_type:b'F', body_size:71, channel:1288445967)
+2025-11-12 13:42:18,555 [INFO] create_monitored_items
+2025-11-12 13:42:18,555 [INFO] received header: Header(type:b'MSG', chunk_type:b'F', body_size:71, channel:1288445967)
+2025-11-12 13:42:18,601 [INFO] [DB] Oracle 연결 성공 (Thick, service_name=orcl)
+2025-11-12 13:42:18,604 [INFO] [DB] 실제 service_name = orcl
+2025-11-12 13:42:18,604 [INFO] [DB] is_thin_mode=False
+2025-11-12 13:42:19,059 [INFO] received header: Header(type:b'MSG', chunk_type:b'F', body_size:444, channel:1288445967)
+2025-11-12 13:42:19,060 [INFO] call_publish_callback
+2025-11-12 13:42:19,061 [INFO] Publish callback called with result: PublishResult(SubscriptionId:{self.SubscriptionId}, AvailableSequenceNumbers:{self.AvailableSequenceNumbers}, MoreNotifications:{self.MoreNotifications}, NotificationMessage:{self.NotificationMessage}, Results:{self.Results}, DiagnosticInfos:{self.DiagnosticInfos})
+2025-11-12 13:42:19,061 [INFO] publish
+2025-11-12 13:42:19,573 [INFO] received header: Header(type:b'MSG', chunk_type:b'F', body_size:120, channel:1288445967)
+2025-11-12 13:42:19,574 [INFO] call_publish_callback
+2025-11-12 13:42:19,574 [INFO] Publish callback called with result: PublishResult(SubscriptionId:{self.SubscriptionId}, AvailableSequenceNumbers:{self.AvailableSequenceNumbers}, MoreNotifications:{self.MoreNotifications}, NotificationMessage:{self.NotificationMessage}, Results:{self.Results}, DiagnosticInfos:{self.DiagnosticInfos})
+2025-11-12 13:42:19,576 [INFO] publish
+2025-11-12 13:42:19,585 [INFO] [PROD] Device1.MC3 → VAL=156515
+2025-11-12 13:42:20,551 [INFO] received header: Header(type:b'MSG', chunk_type:b'F', body_size:73, channel:1288445967)
+2025-11-12 13:42:20,552 [INFO] call_publish_callback
+2025-11-12 13:42:20,552 [INFO] Publish callback called with result: PublishResult(SubscriptionId:{self.SubscriptionId}, AvailableSequenceNumbers:{self.AvailableSequenceNumbers}, MoreNotifications:{self.MoreNotifications}, NotificationMessage:{self.NotificationMessage}, Results:{self.Results}, DiagnosticInfos:{self.DiagnosticInfos})
+2025-11-12 13:42:20,552 [INFO] publish
+2025-11-12 13:42:20,598 [INFO] received header: Header(type:b'MSG', chunk_type:b'F', body_size:120, channel:1288445967)
+2025-11-12 13:42:20,599 [INFO] call_publish_callback
+2025-11-12 13:42:20,599 [INFO] Publish callback called with result: PublishResult(SubscriptionId:{self.SubscriptionId}, AvailableSequenceNumbers:{self.AvailableSequenceNumbers}, MoreNotifications:{self.MoreNotifications}, NotificationMessage:{self.NotificationMessage}, Results:{self.Results}, DiagnosticInfos:{self.DiagnosticInfos})
+2025-11-12 13:42:20,600 [INFO] publish
+2025-11-12 13:42:20,607 [INFO] [PROD] Device1.MC1 → VAL=65542
+2025-11-12 13:42:21,618 [INFO] received header: Header(type:b'MSG', chunk_type:b'F', body_size:124, channel:1288445967)
+2025-11-12 13:42:21,619 [INFO] call_publish_callback
+2025-11-12 13:42:21,619 [INFO] Publish callback called with result: PublishResult(SubscriptionId:{self.SubscriptionId}, AvailableSequenceNumbers:{self.AvailableSequenceNumbers}, MoreNotifications:{self.MoreNotifications}, NotificationMessage:{self.NotificationMessage}, Results:{self.Results}, DiagnosticInfos:{self.DiagnosticInfos})
+2025-11-12 13:42:21,619 [INFO] publish
+2025-11-12 13:42:21,627 [INFO] [PROD] Device1.MC3 → VAL=156516
+2025-11-12 13:42:22,620 [INFO] received header: Header(type:b'MSG', chunk_type:b'F', body_size:124, channel:1288445967)
+2025-11-12 13:42:22,620 [INFO] call_publish_callback
+2025-11-12 13:42:22,621 [INFO] Publish callback called with result: PublishResult(SubscriptionId:{self.SubscriptionId}, AvailableSequenceNumbers:{self.AvailableSequenceNumbers}, MoreNotifications:{self.MoreNotifications}, NotificationMessage:{self.NotificationMessage}, Results:{self.Results}, DiagnosticInfos:{self.DiagnosticInfos})
+2025-11-12 13:42:22,621 [INFO] publish
+2025-11-12 13:42:22,628 [INFO] [PROD] Device1.MC1 → VAL=65543
+2025-11-12 13:42:24,154 [INFO] received header: Header(type:b'MSG', chunk_type:b'F', body_size:124, channel:1288445967)
+2025-11-12 13:42:24,154 [INFO] call_publish_callback
+2025-11-12 13:42:24,155 [INFO] Publish callback called with result: PublishResult(SubscriptionId:{self.SubscriptionId}, AvailableSequenceNumbers:{self.AvailableSequenceNumbers}, MoreNotifications:{self.MoreNotifications}, NotificationMessage:{self.NotificationMessage}, Results:{self.Results}, DiagnosticInfos:{self.DiagnosticInfos})
+2025-11-12 13:42:24,155 [INFO] publish
+2025-11-12 13:42:24,163 [INFO] [PROD] Device1.MC3 → VAL=156517
+2025-11-12 13:42:24,664 [INFO] received header: Header(type:b'MSG', chunk_type:b'F', body_size:122, channel:1288445967)
+2025-11-12 13:42:24,664 [INFO] call_publish_callback
+2025-11-12 13:42:24,665 [INFO] Publish callback called with result: PublishResult(SubscriptionId:{self.SubscriptionId}, AvailableSequenceNumbers:{self.AvailableSequenceNumbers}, MoreNotifications:{self.MoreNotifications}, NotificationMessage:{self.NotificationMessage}, Results:{self.Results}, DiagnosticInfos:{self.DiagnosticInfos})
+2025-11-12 13:42:24,665 [INFO] publish
+2025-11-12 13:42:24,669 [INFO] [STATE] Device1.MC5_1 → STATE=N
+2025-11-12 13:42:25,178 [INFO] received header: Header(type:b'MSG', chunk_type:b'F', body_size:124, channel:1288445967)
+2025-11-12 13:42:25,178 [INFO] call_publish_callback
+2025-11-12 13:42:25,179 [INFO] Publish callback called with result: PublishResult(SubscriptionId:{self.SubscriptionId}, AvailableSequenceNumbers:{self.AvailableSequenceNumbers}, MoreNotifications:{self.MoreNotifications}, NotificationMessage:{self.NotificationMessage}, Results:{self.Results}, DiagnosticInfos:{self.DiagnosticInfos})
+2025-11-12 13:42:25,179 [INFO] publish
+2025-11-12 13:42:25,187 [INFO] [PROD] Device1.MC1 → VAL=65544
+2025-11-12 13:42:27,227 [INFO] received header: Header(type:b'MSG', chunk_type:b'F', body_size:124, channel:1288445967)
+2025-11-12 13:42:27,227 [INFO] call_publish_callback
+2025-11-12 13:42:27,228 [INFO] Publish callback called with result: PublishResult(SubscriptionId:{self.SubscriptionId}, AvailableSequenceNumbers:{self.AvailableSequenceNumbers}, MoreNotifications:{self.MoreNotifications}, NotificationMessage:{self.NotificationMessage}, Results:{self.Results}, DiagnosticInfos:{self.DiagnosticInfos})
+2025-11-12 13:42:27,228 [INFO] publish
+2025-11-12 13:42:27,239 [INFO] [PROD] Device1.MC3 → VAL=156518
+2025-11-12 13:42:27,741 [INFO] received header: Header(type:b'MSG', chunk_type:b'F', body_size:124, channel:1288445967)
+2025-11-12 13:42:27,741 [INFO] call_publish_callback
+2025-11-12 13:42:27,742 [INFO] Publish callback called with result: PublishResult(SubscriptionId:{self.SubscriptionId}, AvailableSequenceNumbers:{self.AvailableSequenceNumbers}, MoreNotifications:{self.MoreNotifications}, NotificationMessage:{self.NotificationMessage}, Results:{self.Results}, DiagnosticInfos:{self.DiagnosticInfos})
+2025-11-12 13:42:27,742 [INFO] publish
+2025-11-12 13:42:27,749 [INFO] [PROD] Device1.MC1 → VAL=65545
+2025-11-12 13:42:29,788 [INFO] received header: Header(type:b'MSG', chunk_type:b'F', body_size:124, channel:1288445967)
+2025-11-12 13:42:29,788 [INFO] call_publish_callback
+2025-11-12 13:42:29,788 [INFO] Publish callback called with result: PublishResult(SubscriptionId:{self.SubscriptionId}, AvailableSequenceNumbers:{self.AvailableSequenceNumbers}, MoreNotifications:{self.MoreNotifications}, NotificationMessage:{self.NotificationMessage}, Results:{self.Results}, DiagnosticInfos:{self.DiagnosticInfos})
+2025-11-12 13:42:29,788 [INFO] publish
+2025-11-12 13:42:29,795 [INFO] [PROD] Device1.MC3 → VAL=156519
+2025-11-12 13:42:30,299 [INFO] received header: Header(type:b'MSG', chunk_type:b'F', body_size:124, channel:1288445967)
+2025-11-12 13:42:30,300 [INFO] call_publish_callback
+2025-11-12 13:42:30,300 [INFO] Publish callback called with result: PublishResult(SubscriptionId:{self.SubscriptionId}, AvailableSequenceNumbers:{self.AvailableSequenceNumbers}, MoreNotifications:{self.MoreNotifications}, NotificationMessage:{self.NotificationMessage}, Results:{self.Results}, DiagnosticInfos:{self.DiagnosticInfos})
+2025-11-12 13:42:30,301 [INFO] publish
+2025-11-12 13:42:30,308 [INFO] [PROD] Device1.MC1 → VAL=65546
+2025-11-12 13:42:32,852 [INFO] received header: Header(type:b'MSG', chunk_type:b'F', body_size:150, channel:1288445967)
+2025-11-12 13:42:32,852 [INFO] call_publish_callback
+2025-11-12 13:42:32,852 [INFO] Publish callback called with result: PublishResult(SubscriptionId:{self.SubscriptionId}, AvailableSequenceNumbers:{self.AvailableSequenceNumbers}, MoreNotifications:{self.MoreNotifications}, NotificationMessage:{self.NotificationMessage}, Results:{self.Results}, DiagnosticInfos:{self.DiagnosticInfos})
+2025-11-12 13:42:32,853 [INFO] publish
+2025-11-12 13:42:32,860 [INFO] [PROD] Device1.MC1 → VAL=65547
+2025-11-12 13:42:32,870 [INFO] [PROD] Device1.MC3 → VAL=156520
+2025-11-12 13:42:35,409 [INFO] received header: Header(type:b'MSG', chunk_type:b'F', body_size:150, channel:1288445967)
+2025-11-12 13:42:35,409 [INFO] call_publish_callback
+2025-11-12 13:42:35,409 [INFO] Publish callback called with result: PublishResult(SubscriptionId:{self.SubscriptionId}, AvailableSequenceNumbers:{self.AvailableSequenceNumbers}, MoreNotifications:{self.MoreNotifications}, NotificationMessage:{self.NotificationMessage}, Results:{self.Results}, DiagnosticInfos:{self.DiagnosticInfos})
+2025-11-12 13:42:35,410 [INFO] publish
+2025-11-12 13:42:35,417 [INFO] [PROD] Device1.MC1 → VAL=65548
+2025-11-12 13:42:35,427 [INFO] [PROD] Device1.MC3 → VAL=156521
+2025-11-12 13:42:37,511 [INFO] delete_subscription
+2025-11-12 13:42:37,512 [INFO] received header: Header(type:b'MSG', chunk_type:b'F', body_size:52, channel:1288445967)
+2025-11-12 13:42:37,512 [INFO] _delete_subscriptions_callback
+2025-11-12 13:42:37,513 [INFO] delete_subscription
+2025-11-12 13:42:37,513 [INFO] received header: Header(type:b'MSG', chunk_type:b'F', body_size:40, channel:1288445967)
+2025-11-12 13:42:37,514 [INFO] call_publish_callback
+2025-11-12 13:42:37,514 [WARNING] ServiceFault from server received while waiting for publish response
+2025-11-12 13:42:37,515 [INFO] BadNoSubscription received, ignoring because it's probably valid.
+2025-11-12 13:42:37,515 [INFO] received header: Header(type:b'MSG', chunk_type:b'F', body_size:40, channel:1288445967)
+2025-11-12 13:42:37,515 [INFO] call_publish_callback
+2025-11-12 13:42:37,515 [WARNING] ServiceFault from server received while waiting for publish response
+2025-11-12 13:42:37,515 [INFO] BadNoSubscription received, ignoring because it's probably valid.
+2025-11-12 13:42:37,515 [INFO] received header: Header(type:b'MSG', chunk_type:b'F', body_size:40, channel:1288445967)
+2025-11-12 13:42:37,515 [INFO] call_publish_callback
+2025-11-12 13:42:37,515 [WARNING] ServiceFault from server received while waiting for publish response
+2025-11-12 13:42:37,516 [INFO] BadNoSubscription received, ignoring because it's probably valid.
+2025-11-12 13:42:37,516 [INFO] received header: Header(type:b'MSG', chunk_type:b'F', body_size:40, channel:1288445967)
+2025-11-12 13:42:37,516 [INFO] call_publish_callback
+2025-11-12 13:42:37,516 [WARNING] ServiceFault from server received while waiting for publish response
+2025-11-12 13:42:37,516 [INFO] BadNoSubscription received, ignoring because it's probably valid.
+2025-11-12 13:42:37,516 [INFO] received header: Header(type:b'MSG', chunk_type:b'F', body_size:52, channel:1288445967)
+2025-11-12 13:42:37,516 [INFO] _delete_subscriptions_callback
+2025-11-12 13:42:37,517 [INFO] close_session
+2025-11-12 13:42:37,517 [INFO] received header: Header(type:b'MSG', chunk_type:b'F', body_size:40, channel:1288445967)
+2025-11-12 13:42:37,517 [INFO] close_secure_channel
+2025-11-12 13:42:37,518 [INFO] Request to close socket received
+2025-11-12 13:42:37,518 [INFO] Socket closed, waiting for receiver thread to terminate...
+2025-11-12 13:42:37,518 [INFO] Socket has closed connection
+2025-11-12 13:42:37,518 [INFO] Cancelling request 42
+2025-11-12 13:42:37,518 [INFO] Thread ended
+2025-11-12 13:42:37,519 [INFO] Done closing socket: Receiving thread terminated, socket disconnected
+2025-11-12 13:42:37,519 [INFO] OPC UA Disconnected
+2025-11-12 13:43:04,748 [INFO] 로그 파일 초기화 완료
+2025-11-12 13:43:04,787 [INFO] opening connection
+2025-11-12 13:43:04,803 [INFO] Thread started
+2025-11-12 13:43:04,803 [INFO] received header: Header(type:b'ACK', chunk_type:b'F', body_size:20, channel:0)
+2025-11-12 13:43:04,803 [INFO] open_secure_channel
+2025-11-12 13:43:04,804 [INFO] received header: Header(type:b'OPN', chunk_type:b'F', body_size:124, channel:1288445968)
+2025-11-12 13:43:04,804 [INFO] create_session
+2025-11-12 13:43:04,804 [INFO] received header: Header(type:b'MSG', chunk_type:b'F', body_size:3210, channel:1288445968)
+2025-11-12 13:43:04,805 [INFO] activate_session
+2025-11-12 13:43:04,805 [INFO] received header: Header(type:b'MSG', chunk_type:b'F', body_size:84, channel:1288445968)
+2025-11-12 13:43:04,805 [INFO] OPC UA Connected
+2025-11-12 13:43:04,806 [INFO] create_subscription
+2025-11-12 13:43:04,806 [INFO] received header: Header(type:b'MSG', chunk_type:b'F', body_size:60, channel:1288445968)
+2025-11-12 13:43:04,806 [INFO] _create_subscription_callback
+2025-11-12 13:43:04,806 [INFO] publish
+2025-11-12 13:43:04,806 [INFO] publish
+2025-11-12 13:43:04,806 [INFO] create_subscription
+2025-11-12 13:43:04,806 [INFO] received header: Header(type:b'MSG', chunk_type:b'F', body_size:60, channel:1288445968)
+2025-11-12 13:43:04,807 [INFO] _create_subscription_callback
+2025-11-12 13:43:04,807 [INFO] publish
+2025-11-12 13:43:04,807 [INFO] publish
+2025-11-12 13:43:04,807 [INFO] create_monitored_items
+2025-11-12 13:43:04,807 [INFO] received header: Header(type:b'MSG', chunk_type:b'F', body_size:71, channel:1288445968)
+2025-11-12 13:43:04,807 [INFO] create_monitored_items
+2025-11-12 13:43:04,808 [INFO] received header: Header(type:b'MSG', chunk_type:b'F', body_size:71, channel:1288445968)
+2025-11-12 13:43:04,808 [INFO] create_monitored_items
+2025-11-12 13:43:04,808 [INFO] received header: Header(type:b'MSG', chunk_type:b'F', body_size:71, channel:1288445968)
+2025-11-12 13:43:04,808 [INFO] create_monitored_items
+2025-11-12 13:43:04,808 [INFO] received header: Header(type:b'MSG', chunk_type:b'F', body_size:71, channel:1288445968)
+2025-11-12 13:43:04,809 [INFO] create_monitored_items
+2025-11-12 13:43:04,809 [INFO] received header: Header(type:b'MSG', chunk_type:b'F', body_size:71, channel:1288445968)
+2025-11-12 13:43:04,809 [INFO] create_monitored_items
+2025-11-12 13:43:04,809 [INFO] received header: Header(type:b'MSG', chunk_type:b'F', body_size:71, channel:1288445968)
+2025-11-12 13:43:04,809 [INFO] create_monitored_items
+2025-11-12 13:43:04,809 [INFO] received header: Header(type:b'MSG', chunk_type:b'F', body_size:71, channel:1288445968)
+2025-11-12 13:43:04,810 [INFO] create_monitored_items
+2025-11-12 13:43:04,810 [INFO] received header: Header(type:b'MSG', chunk_type:b'F', body_size:71, channel:1288445968)
+2025-11-12 13:43:04,810 [INFO] create_monitored_items
+2025-11-12 13:43:04,810 [INFO] received header: Header(type:b'MSG', chunk_type:b'F', body_size:71, channel:1288445968)
+2025-11-12 13:43:04,810 [INFO] create_monitored_items
+2025-11-12 13:43:04,810 [INFO] received header: Header(type:b'MSG', chunk_type:b'F', body_size:71, channel:1288445968)
+2025-11-12 13:43:04,810 [INFO] create_monitored_items
+2025-11-12 13:43:04,811 [INFO] received header: Header(type:b'MSG', chunk_type:b'F', body_size:71, channel:1288445968)
+2025-11-12 13:43:04,811 [INFO] create_monitored_items
+2025-11-12 13:43:04,811 [INFO] received header: Header(type:b'MSG', chunk_type:b'F', body_size:71, channel:1288445968)
+2025-11-12 13:43:04,811 [INFO] create_monitored_items
+2025-11-12 13:43:04,811 [INFO] received header: Header(type:b'MSG', chunk_type:b'F', body_size:71, channel:1288445968)
+2025-11-12 13:43:04,811 [INFO] create_monitored_items
+2025-11-12 13:43:04,811 [INFO] received header: Header(type:b'MSG', chunk_type:b'F', body_size:71, channel:1288445968)
+2025-11-12 13:43:04,866 [INFO] [DB] Oracle 연결 성공 (Thick, service_name=orcl)
+2025-11-12 13:43:04,869 [INFO] [DB] 실제 service_name = orcl
+2025-11-12 13:43:04,870 [INFO] [DB] is_thin_mode=False
+2025-11-12 13:43:05,313 [INFO] received header: Header(type:b'MSG', chunk_type:b'F', body_size:444, channel:1288445968)
+2025-11-12 13:43:05,314 [INFO] call_publish_callback
+2025-11-12 13:43:05,315 [INFO] Publish callback called with result: PublishResult(SubscriptionId:{self.SubscriptionId}, AvailableSequenceNumbers:{self.AvailableSequenceNumbers}, MoreNotifications:{self.MoreNotifications}, NotificationMessage:{self.NotificationMessage}, Results:{self.Results}, DiagnosticInfos:{self.DiagnosticInfos})
+2025-11-12 13:43:05,316 [INFO] publish
+2025-11-12 13:43:05,705 [INFO] delete_subscription
+2025-11-12 13:43:05,706 [INFO] received header: Header(type:b'MSG', chunk_type:b'F', body_size:52, channel:1288445968)
+2025-11-12 13:43:05,706 [INFO] _delete_subscriptions_callback
+2025-11-12 13:43:05,706 [INFO] delete_subscription
+2025-11-12 13:43:05,707 [INFO] received header: Header(type:b'MSG', chunk_type:b'F', body_size:40, channel:1288445968)
+2025-11-12 13:43:05,707 [INFO] call_publish_callback
+2025-11-12 13:43:05,707 [WARNING] ServiceFault from server received while waiting for publish response
+2025-11-12 13:43:05,708 [INFO] BadNoSubscription received, ignoring because it's probably valid.
+2025-11-12 13:43:05,708 [INFO] received header: Header(type:b'MSG', chunk_type:b'F', body_size:40, channel:1288445968)
+2025-11-12 13:43:05,708 [INFO] call_publish_callback
+2025-11-12 13:43:05,708 [WARNING] ServiceFault from server received while waiting for publish response
+2025-11-12 13:43:05,708 [INFO] BadNoSubscription received, ignoring because it's probably valid.
+2025-11-12 13:43:05,708 [INFO] received header: Header(type:b'MSG', chunk_type:b'F', body_size:40, channel:1288445968)
+2025-11-12 13:43:05,708 [INFO] call_publish_callback
+2025-11-12 13:43:05,708 [WARNING] ServiceFault from server received while waiting for publish response
+2025-11-12 13:43:05,708 [INFO] BadNoSubscription received, ignoring because it's probably valid.
+2025-11-12 13:43:05,708 [INFO] received header: Header(type:b'MSG', chunk_type:b'F', body_size:40, channel:1288445968)
+2025-11-12 13:43:05,708 [INFO] call_publish_callback
+2025-11-12 13:43:05,708 [WARNING] ServiceFault from server received while waiting for publish response
+2025-11-12 13:43:05,709 [INFO] BadNoSubscription received, ignoring because it's probably valid.
+2025-11-12 13:43:05,709 [INFO] received header: Header(type:b'MSG', chunk_type:b'F', body_size:52, channel:1288445968)
+2025-11-12 13:43:05,709 [INFO] _delete_subscriptions_callback
+2025-11-12 13:43:05,709 [INFO] close_session
+2025-11-12 13:43:05,709 [INFO] received header: Header(type:b'MSG', chunk_type:b'F', body_size:40, channel:1288445968)
+2025-11-12 13:43:05,710 [INFO] close_secure_channel
+2025-11-12 13:43:05,710 [INFO] Request to close socket received
+2025-11-12 13:43:05,710 [INFO] Socket closed, waiting for receiver thread to terminate...
+2025-11-12 13:43:05,710 [INFO] Socket has closed connection
+2025-11-12 13:43:05,710 [INFO] Cancelling request 28
+2025-11-12 13:43:05,710 [INFO] Thread ended
+2025-11-12 13:43:05,710 [INFO] Done closing socket: Receiving thread terminated, socket disconnected
+2025-11-12 13:43:05,711 [INFO] OPC UA Disconnected
